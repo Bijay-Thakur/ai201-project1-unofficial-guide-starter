@@ -40,11 +40,13 @@ I choose popular supplements company in US. Almost all of them have similar kind
      numbers fit the structure of your documents.
      A review-heavy corpus warrants different chunking than a long FAQ. -->
 
-Chunk size:2048 tokens
+Chunk size: 2048 tokens (~8,192 chars — RecursiveCharacterTextSplitter is char-based, converted at ~4 chars/token)
 
-Overlap:410
+Overlap: 410 tokens (~1,640 chars)
 
 Reasoning: Since we are doing fixed size chunking here, we need to have overlapping context so that the model doesnt miss any relevant context.
+
+**Ingestion note:** Most sources are Shopify stores. Their catalog pages render product listings via JavaScript, so requests + BeautifulSoup only returns the page shell (~3–8 k chars) — not the actual products. The updated ingest_and_chunk.py targets `/products.json?limit=250&page=N` for Shopify hosts instead, which returns full product data (title, description, tags, variants) as static JSON without JavaScript. Non-Shopify sources (solgar, lifeextension, nowfoods) fall back to HTML scraping.
 
 
 ---
