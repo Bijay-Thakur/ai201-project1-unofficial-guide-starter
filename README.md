@@ -14,6 +14,7 @@
      Example: "Student reviews of CS professors at [university] — useful because official
      course descriptions don't reflect teaching style, exam difficulty, or workload." -->
 
+I choose popular supplements company in US. Almost all of them have similar kinds of products, so it will be easier for consumer to compare between different brands even if they are looking for one particular product, for example: fish oil.
 ---
 
 ## Document Sources
@@ -24,16 +25,16 @@
 
 | # | Source | Type | URL or file path |
 |---|--------|------|-----------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
-| 7 | | | |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
+| 1 | Solgar | Product catalog (website) | <https://www.solgar.com/solgar-products> |
+| 2 | Life Extension | Product catalog (website) | <https://www.lifeextension.com/vitamins-supplements/essentials> |
+| 3 | Garden of Life | Product catalog (website) | <https://www.gardenoflife.com/products> |
+| 4 | Country Life Vitamins | Product catalog (website) | <https://countrylifevitamins.com/collections/all> |
+| 5 | MegaFood | Product catalog (website) | <https://megafood.com/collections/all> |
+| 6 | Solaray | Product catalog (website) | <https://solaray.com/collections/all-products> |
+| 7 | NOW Foods | Product catalog (website) | <https://www.nowfoods.com/products/supplements/all-products> |
+| 8 | Source of Nature | Product catalog (website) | <https://sourceofnature.eu/collections/all-products> |
+| 9 | Nature's Plus | Product catalog (website) | <https://naturesplus.com/collections/source-of-life> |
+| 10 | Jarrow Formulas | Product catalog (website) | <https://jarrow.com/collections/all> |
 
 ---
 
