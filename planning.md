@@ -10,7 +10,7 @@
 ## Domain
 
 <!-- What domain did you choose? Why is this knowledge valuable and hard to find through official channels? -->
-
+I choose popular supplements company in US. Almost all of them have similar kinds of products, so it will be easier for consumer to compare between different brands even if they are looking for one particular product, for example: fish oil.
 ---
 
 ## Documents
@@ -18,18 +18,18 @@
 <!-- List your specific sources: URLs, subreddit names, forum threads, or file descriptions.
      Aim for at least 10 sources that together cover different subtopics or perspectives within your domain. -->
 
-| # | Source | Description | URL or location |
-|---|--------|-------------|-----------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
-| 7 | | | |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
+| # | Source | Type | URL or file path |
+|---|--------|------|-----------------|
+| 1 | Solgar | Product catalog (website) | <https://www.solgar.com/solgar-products> |
+| 2 | Life Extension | Product catalog (website) | <https://www.lifeextension.com/vitamins-supplements/essentials> |
+| 3 | Garden of Life | Product catalog (website) | <https://www.gardenoflife.com/products> |
+| 4 | Country Life Vitamins | Product catalog (website) | <https://countrylifevitamins.com/collections/all> |
+| 5 | MegaFood | Product catalog (website) | <https://megafood.com/collections/all> |
+| 6 | Solaray | Product catalog (website) | <https://solaray.com/collections/all-products> |
+| 7 | NOW Foods | Product catalog (website) | <https://www.nowfoods.com/products/supplements/all-products> |
+| 8 | Source of Nature | Product catalog (website) | <https://sourceofnature.eu/collections/all-products> |
+| 9 | Nature's Plus | Product catalog (website) | <https://naturesplus.com/collections/source-of-life> |
+| 10 | Jarrow Formulas | Product catalog (website) | <https://jarrow.com/collections/all> |
 
 ---
 
@@ -40,11 +40,12 @@
      numbers fit the structure of your documents.
      A review-heavy corpus warrants different chunking than a long FAQ. -->
 
-**Chunk size:**
+Chunk size:2048 tokens
 
-**Overlap:**
+Overlap:410
 
-**Reasoning:**
+Reasoning: Since we are doing fixed size chunking here, we need to have overlapping context so that the model doesnt miss any relevant context.
+
 
 ---
 
@@ -73,11 +74,11 @@
 
 | # | Question | Expected answer |
 |---|----------|-----------------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
-| 5 | | |
+| 1 | Which brands in the catalog sell a fish oil supplement? | Should name at least two specific brands from the 10 sources (e.g., Solgar, NOW Foods, Jarrow Formulas) — not a generic "many brands do." |
+| 2 | Does Solgar offer a Vitamin D3 supplement, and if so what form does it come in (e.g., softgel, tablet, liquid)? | Yes — Solgar lists a Vitamin D3 product; the expected form is softgel. Answer is wrong if it says "unknown" or names a different brand. |
+| 3 | Which brands offer a magnesium supplement, and what forms of magnesium do they use (e.g., glycinate, citrate, oxide)? | Should identify at least two brands and name at least two distinct magnesium forms pulled from the catalog pages — not generic chemistry knowledge. |
+| 4 | Does MegaFood sell a B-complex product? | Yes or No, verifiable directly from the MegaFood catalog page. The answer is wrong if the system hedges without checking the source. |
+| 5 | Which brand offers the widest variety of probiotic products based on the catalog pages scraped? | Should name a specific brand (e.g., Garden of Life or Jarrow Formulas) with a count or list of probiotic SKUs as justification — not a guess or a general statement about probiotics. |
 
 ---
 
@@ -100,6 +101,50 @@
      Label each stage with the tool or library you're using.
      You can use ASCII art, a Mermaid diagram, or embed a sketch as an image.
      You'll use this diagram as context when prompting AI tools to implement each stage. -->
+
+```text
+  ┌─────────────────────────┐
+  │   Document Ingestion    │
+  │  (requests / BeautifulSoup)  │
+  │  10 supplement brand    │
+  │  product catalog pages  │
+  └───────────┬─────────────┘
+              │
+              ▼
+  ┌─────────────────────────┐
+  │        Chunking         │
+  │  (LangChain             │
+  │   RecursiveCharacter-   │
+  │   TextSplitter)         │
+  │  size=2048 / overlap=410│
+  └───────────┬─────────────┘
+              │
+              ▼
+  ┌─────────────────────────┐
+  │  Embedding + Vector     │
+  │       Store             │
+  │  Embedding:             │
+  │  all-MiniLM-L6-v2       │
+  │  (sentence-transformers)│
+  │  Store: ChromaDB        │
+  └───────────┬─────────────┘
+              │
+              ▼
+  ┌─────────────────────────┐
+  │        Retrieval        │
+  │  (ChromaDB similarity   │
+  │   search, top-k=5)      │
+  └───────────┬─────────────┘
+              │
+              ▼
+  ┌─────────────────────────┐
+  │       Generation        │
+  │  (Claude claude-sonnet- │
+  │   4-6 via Anthropic API)│
+  │  grounded to retrieved  │
+  │  chunks only            │
+  └─────────────────────────┘
+```
 
 ---
 
