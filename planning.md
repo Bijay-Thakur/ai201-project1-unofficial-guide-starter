@@ -59,11 +59,11 @@ Reasoning: Since we are doing fixed size chunking here, we need to have overlapp
      would you weigh in choosing a different embedding model — context length, multilingual
      support, accuracy on domain-specific text, latency? -->
 
-**Embedding model:**
+**Embedding model:** all-MiniLM-L6-v2 via sentence-transformers. Loaded by ChromaDB's `SentenceTransformerEmbeddingFunction`; vectors stored with cosine similarity (`hnsw:space: cosine`).
 
-**Top-k:**
+**Top-k:** 5
 
-**Production tradeoff reflection:**
+**Production tradeoff reflection:** Since the products of these companies are not too many, using a high-capability API-hosted model (e.g. text-embedding-3-large) would be overkill on cost. all-MiniLM-L6-v2 runs locally, is fast, and handles English product catalog text well. For a real deployment the main tradeoffs to weigh would be: (1) context length — all-MiniLM tops out at 256 tokens, so very long product descriptions get truncated; a model with a 512+ token window (e.g. all-mpnet-base-v2) would be safer; (2) domain specificity — a fine-tuned biomedical or retail embedding model might score closer matches on supplement jargon; (3) latency — local inference is fast at this corpus size but would need batching or a hosted endpoint under concurrent load.
 
 ---
 
