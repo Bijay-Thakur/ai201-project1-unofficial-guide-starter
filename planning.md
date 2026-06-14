@@ -90,9 +90,9 @@ Reasoning: Since we are doing fixed size chunking here, we need to have overlapp
      Consider: noisy or inconsistent documents, missing source attribution, off-topic
      retrieval, chunks that split key information across boundaries. -->
 
-1.
+1. **JavaScript-rendered catalog pages.** Most of the 10 sources are Shopify stores that inject product listings via client-side JavaScript. A plain `requests` + BeautifulSoup scraper will only see the page shell — roughly 3–8 KB of navigation and marketing text with no product data. This means the ingestion stage could silently produce near-empty chunks without raising an error, and retrieval would fail quietly at query time. Mitigation: detect Shopify hosts (check for `cdn.shopify.com` in HTML or a `Shopify` header) and switch to the `/products.json` API endpoint, which returns full product JSON without JavaScript.
 
-2.
+2. **Missing sources creating silent corpus gaps.** Three of the 10 planned sources (Solgar, Garden of Life, NOW Foods) use non-Shopify platforms that return minimal or JavaScript-gated HTML. If these sources fail silently, the vector store will simply have no chunks for those brands and the system will retrieve from unrelated brands instead — without telling the user why. The grounding rule ("if the excerpt doesn't contain the answer, say so") prevents hallucination, but the user may not realize that the missing information is a scraper failure rather than a genuine absence of products.
 
 ---
 
@@ -141,8 +141,9 @@ Reasoning: Since we are doing fixed size chunking here, we need to have overlapp
               ▼
   ┌─────────────────────────┐
   │       Generation        │
-  │  (Claude claude-sonnet- │
-  │   4-6 via Anthropic API)│
+  │  (Groq API —            │
+  │   llama-3.3-70b-        │
+  │   versatile)            │
   │  grounded to retrieved  │
   │  chunks only            │
   └─────────────────────────┘
@@ -164,6 +165,12 @@ Reasoning: Since we are doing fixed size chunking here, we need to have overlapp
 
 **Milestone 3 — Ingestion and chunking:**
 
+Used Claude with the Documents table, Chunking Strategy section, and Architecture diagram as input. Asked it to implement a script that loads the 10 URLs, fetches HTML, strips noise tags, and splits with LangChain RecursiveCharacterTextSplitter at size=8192/overlap=1640. It produced `ingest_and_chunk.py`. I then verified it by checking the output JSON files in `documents/chunks/` and confirming chunk counts were in the expected range. When the initial run returned only 1 chunk per Shopify-based source (JS rendering issue), I directed Claude to switch to the Shopify `/products.json` API endpoint, which returned full product data without JavaScript.
+
 **Milestone 4 — Embedding and retrieval:**
 
+Used Claude with the Retrieval Approach section and Architecture diagram. Asked it to implement `embed_and_store.py` (ChromaDB + all-MiniLM-L6-v2) and `test_retrieval.py` (runs the 5 eval questions, prints distances). I verified by running `test_retrieval.py` and checking that distances were below 0.50 for most eval questions. Hit a Windows page-file/memory-mapping crash when using the PyTorch-based `SentenceTransformerEmbeddingFunction`; directed Claude to switch to ChromaDB's built-in ONNX `DefaultEmbeddingFunction`, which resolved the issue.
+
 **Milestone 5 — Generation and interface:**
+
+Used Claude with the full pipeline diagram, the Groq API key setup in `.env`, and the grounding requirement. Asked it to implement `rag_pipeline.py` (retrieval + Groq generation with a strict grounding system prompt) and `app.py` (CLI loop with `/sources` toggle). Verified by piping a test question through `app.py` and confirming the answer cited only brands present in the retrieved chunks, with a `Sources:` line at the end.
